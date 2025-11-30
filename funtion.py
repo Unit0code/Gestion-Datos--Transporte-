@@ -147,13 +147,49 @@ def dividir_lista_str(lista): ###la implemente yo porque no tengo megas y se que
             return string
         string += ', '
 
+def verificador_fecha():
+    while True:
+        print('Introduce la fecha en el formato DIA/MES/ANNO --- HORA:MINUTOS.')
+        fecha = input()
+        try:
+            string = datetime.strptime(fecha , '%d/%m/%Y --- %H:%M')
+            return fecha
+        except Exception:
+            print('Ha Habido un error. Introduce una fecha en el formato solicitado')
 
-def agrego_eventos(option): ###Agregar eventos
+def verificador_validez_nuevo_evento(evento, user): ###chequear si no hay colision de eventos o restricciones de recursos
+    for recursos in evento.Recursos:
+        for restr, mssg in evento.Restriction_recursos.items():
+            if recursos.nombre == restr:
+                print(f'{recursos.nombre + ' '+ mssg} ')
+                return False
+        for tupla_restr in evento.Restriction_recursos_pares:
+            pass
+    
+
+def agrego_eventos(option, recursos_disponibles, user): ###Agregar eventos
     print('Dime los Recursos que emplearas para este Evento.')
     if option == 1:
-        even_temporal = Events.travel_Habana('10/10/2005 --- 12:40', 1)
+        
+        even_temporal = Events.travel_Habana('10/10/2005 --- 12:40', 1) ###inicializo una instancia cualquiera temporal
+        restr1, restr2 = even_temporal.Restriction_recursos_pares
+        lista_recursos = []
+
         print(f'Este en especifico necesita de {dividir_lista_str(even_temporal.Needs)}. \nTambien en este viaje\
-              no pueden estar juntos ')
+ no pueden estar juntos {dividir_lista_str(restr1)} o {dividir_lista_str(restr2)}')
+        print('Toma los que necesites.')
+        print('Escribe salir para avisar que ya terminaste.')
+        
+        for idx, recurso in enumerate(recursos_disponibles):
+            print(f'{idx+1}. {recurso.nombre} es un {recurso.categoria}')
+        while True:
+            input_user = try_option(len(recursos_disponibles))
+            lista_recursos.append(recursos_disponibles[input_user - 1])
+            if input_user == 'salir':
+                break
+        print('Y para cuando lo deseas?')
+        fecha = verificador_fecha()
+        evento_final = Events.travel_Habana(fecha, *lista_recursos)
 
     elif option == 2:
         pass
