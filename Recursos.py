@@ -42,11 +42,9 @@ guias_federico = Recurso('Federico', 'Guia')
 guia_phineas = Recurso('Phineas', 'Guia')
 
 
-Recursos_disponibles = { ###Todas las instancias inicializadas arriba
+Recursos_disponibles = [ ###Todas las instancias inicializadas arriba
     transtur1, transtur2, camion1, camion2,
     chofer_juan,chofer_menendez, chofer_pedro,
     chofer_rigoberto, mecanico_jose, mecanico_suarez,
     admin_marlon, admin_diego, guias_federico, guia_phineas
-                        }
-
-print(Recursos_disponibles)
+                        ]

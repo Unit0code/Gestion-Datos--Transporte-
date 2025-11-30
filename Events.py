@@ -20,7 +20,7 @@ class travel_Habana(Events): ### tipo evento de viajes a la habana.
         self.message = ['Cuando ambos se juntan, hacen destrozos por la Habana.',
                         'Sospecho que entre ellos dos traman algo, no podemos dejarlos a solas.'] ### Mensaje de las restricciones
         self.Needs = [ 'Conductor','Vehiculo', 'Guia']  ###lo necesario en las catg de los recursos para iniciar el viaje.
-        self.Recursos = Recursos
+        self.Recursos = list(Recursos)
     
     def __dict__ (self):
         Data = {'Nombre': self.name,
@@ -43,7 +43,7 @@ class travel_Gto(Events): ### tipo evento de viajes a la Gto.
         self.message = ['La ultima vez que estuvieron esos locos juntos, chocaron.',
                         'Sospecho que entre ellos dos traman algo, no podemos dejarlos a solas.'] ### Mensaje de las restricciones
         self.Needs = [ 'Conductor','Vehiculo']  ###lo necesario en las catg de los recursos para iniciar el viaje.
-        self.Recursos = Recursos
+        self.Recursos = list(Recursos)
     
     def __dict__ (self):
         Data = {'Nombre': self.name,
@@ -66,7 +66,7 @@ class travel_Stgo(Events): ### tipo evento de viajes a la Stgo de Cuba.
         self.Restriction_recursos_pares = [('Jose', 'Marlon')] ###No pueden estar en el mismo Evento
         self.message = ['Sospecho que entre ellos dos traman algo, no podemos dejarlos a solas.'] ### Mensaje de las restricciones
         self.Needs = ['Conductor' , 'Vehiculo', 'Guia']  ###lo necesario en las catg de los recursos para iniciar el viaje.
-        self.Recursos = Recursos
+        self.Recursos = list(Recursos)
     
     def __dict__ (self):
         Data = {'Nombre': self.name,
@@ -89,7 +89,7 @@ class travel_Camaguey(Events): ### tipo evento de viajes a Camaguey.
         self.message = ['Ese maneja como quiera y la Transtur es muy preciada como para dejarsela en ese viaje.',
                         'Sospecho que entre ellos dos traman algo, no podemos dejarlos a solas.'] ### Mensaje de las restricciones
         self.Needs = ['Conductor' , 'Vehiculo']  ###lo necesario en las catg de los recursos para iniciar el viaje.
-        self.Recursos = Recursos
+        self.Recursos = list(Recursos)
     
     def __dict__ (self):
         Data = {'Nombre': self.name,
@@ -98,7 +98,7 @@ class travel_Camaguey(Events): ### tipo evento de viajes a Camaguey.
                 'Recursos': self.Recursos
                  }
         return Data
-
+    
 
 class travel_Las_Tunas(Events): ### tipo evento de viajes a Las Tunas.
     def __init__ (self, fecha, *Recursos):
@@ -112,7 +112,7 @@ class travel_Las_Tunas(Events): ### tipo evento de viajes a Las Tunas.
         self.message = ['Ese maneja como quiera y la Transtur es muy preciada como para dejarsela en ese viaje.',
                         'Sospecho que entre ellos dos traman algo, no podemos dejarlos a solas.' ] ### Mensaje de las restricciones
         self.Needs = ['Conductor' , 'Vehiculo']  ###lo necesario en las catg de los recursos para iniciar el viaje.
-        self.Recursos = Recursos
+        self.Recursos = list(Recursos)
     
     def __dict__ (self):
         Data = {'Nombre': self.name,
@@ -134,7 +134,7 @@ class travel_Las_Villas(Events): ### tipo evento de viajes a Las Villas.
         self.Restriction_recursos_pares = [('Jose', 'Marlon')] ###No pueden estar en el mismo Evento
         self.message = ['Sospecho que entre ellos dos traman algo, no podemos dejarlos a solas.'] ### Mensaje de las restricciones
         self.Needs = ['Conductor' , 'Vehiculo']  ###lo necesario en las catg de los recursos para iniciar el viaje.
-        self.Recursos = Recursos
+        self.Recursos = list(Recursos)
     
     def __dict__ (self):
         Data = {'Nombre': self.name,
@@ -156,7 +156,7 @@ class travel_Pinar_Rio(Events): ### tipo evento de viajes a Pinar del Rio.
         self.Restriction_recursos_pares = [('Jose', 'Marlon')] ###No pueden estar en el mismo Evento
         self.message = ['Sospecho que entre ellos dos traman algo, no podemos dejarlos a solas.'] ### Mensaje de las restricciones
         self.Needs = ['Conductor' , 'Vehiculo']  ###lo necesario en las catg de los recursos para iniciar el viaje.
-        self.Recursos = Recursos
+        self.Recursos = list(Recursos)
     
     def __dict__ (self):
         Data = {'Nombre': self.name,
@@ -178,7 +178,7 @@ class travel_Mtz(Events): ### tipo evento de viajes a Matanzas.
         self.Restriction_recursos_pares = [('Jose', 'Marlon')] ###No pueden estar en el mismo Evento
         self.message = ['Sospecho que entre ellos dos traman algo, no podemos dejarlos a solas.'] ### Mensaje de las restricciones
         self.Needs = ['Conductor' , 'Vehiculo']  ###lo necesario en las catg de los recursos para iniciar el viaje.
-        self.Recursos = Recursos
+        self.Recursos = list(Recursos)
     
     def __dict__ (self):
         Data = {'Nombre': self.name,
@@ -200,7 +200,7 @@ class travel_Cienfuegos(Events): ### tipo evento de viajes a Cienfuegos.
         self.Restriction_recursos_pares = [('Jose', 'Marlon')] ###No pueden estar en el mismo Evento
         self.message = ['Sospecho que entre ellos dos traman algo, no podemos dejarlos a solas.'] ### Mensaje de las restricciones
         self.Needs = ['Conductor' , 'Vehiculo', 'Guia']  ###lo necesario en las catg de los recursos para iniciar el viaje.
-        self.Recursos = Recursos
+        self.Recursos = list(Recursos)
     
     def __dict__ (self):
         Data = {'Nombre': self.name,
@@ -222,8 +222,7 @@ class Mantenimiento_Vehiculos(Events): ### tipo evento de Mantenimiento de vehic
         self.Restriction_recursos_pares = [('Marlon', 'Diego')] ###No pueden estar en el mismo Evento
         self.message = ['No hacen falta tantos admins pendientes, seria perdida de tiempo.'] ### Mensaje de las restricciones
         self.Needs = ['TodosVehiculos', 'Suarez', 'Jose']  ###lo necesario de los nombres de los recursos para iniciar el viaje.
-        self.Recursos = Recursos
-    
+        self.Recursos = list(Recursos)
     def __dict__ (self):
         Data = {'Nombre': self.name,
                 'Fecha inicio': datetime.strftime(self.fecha, '%d/%m/%Y - %H:%M'),
@@ -245,7 +244,7 @@ class Botear_Habana(Events): ### tipo evento de Botear en la Habana.
         self.Restriction_recursos_pares = [] ###No pueden estar en el mismo Evento
         self.message = [] ### Mensaje de las restricciones
         self.Needs = ['Vehiculo', 'Conductor']  ###lo necesario de los nombres de los recursos para iniciar el viaje.
-        self.Recursos = Recursos
+        self.Recursos = list(Recursos)
     
     def __dict__ (self):
         Data = {'Nombre': self.name,
