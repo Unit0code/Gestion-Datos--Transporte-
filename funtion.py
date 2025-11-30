@@ -11,7 +11,7 @@ def guardar_json (usuario : User): ###guardar los avances en un json con un path
     for llave, valor in data.items(): ###convertir todos los tipos en un dict para ser guardados.
         if llave == 'Eventos':
             for idx, eventos in enumerate(valor): ###Itero en los eventos 
-                for idc, recursos_evento in enumerate(eventos.Recursos[0]): ###itero en los recursos de ese evento
+                for idc, recursos_evento in enumerate(eventos.Recursos): ###itero en los recursos de ese evento
                     eventos.Recursos[idc] = recursos_evento.__dict__()   ###cada evento lo vuelvo un dict
                 valor[idx] = eventos.__dict__() ### y finalizo ese evento volviendolo un dict tambien
 
@@ -32,7 +32,8 @@ def cargar_json (path : str):
         data_user = json.loads(data_user)
         data_user = inicializar_obj_cargados(data_user) ### se inicializan los tipos recursos y datetime en cada event
         data_user = inicializar_eventos(data_user) ### se inicializan los eventos
-        usuario = pass
+        user = inicializar_user(data_user, path) ### se inicializa el usuario
+        return user
     ### llamar a todas las funciones de iniacializacion
     
 def inicializar_obj_cargados (data_user): ### cuando cargue el archivo, se deben inicializar todos los tipos
@@ -41,9 +42,7 @@ def inicializar_obj_cargados (data_user): ### cuando cargue el archivo, se deben
         return False
     for idx, evento_p in enumerate(Eventos): ### por cada evento
         for llave, valor in evento_p.items(): ### vere las caracteristicas de dicho evento
-            if llave == 'Fecha inicio': ### instancia datetime
-                evento_p[llave] = datetime.strptime(valor, '%d/%m/%Y - %H:%M')
-            elif llave == 'Recursos':  ### instancias recursos
+            if llave == 'Recursos':  ### instancias recursos
                 for idc, recurso in enumerate(valor): ### por cada recurso
                     nombre = recurso['Nombre']
                     categoria = recurso['Categoria']
@@ -108,8 +107,13 @@ def inicializar_eventos (data_user):
     data_user['Eventos'] = Eventos
     return data_user
 
-def inicializar_user (data_user):
-    
+def inicializar_user (data_user, path):
+    nombre = data_user['Nombre']
+    passw = data_user['Passw']
+    path_r = path
+    eventos = data_user['Eventos']
+    user = User(nombre, passw, path_r, eventos)
+    return user
             
 
 

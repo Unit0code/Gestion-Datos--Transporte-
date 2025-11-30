@@ -14,6 +14,6 @@ class User: ###Se inicializa el usuario una vez cargue el .json o cree una cuent
         Data = { 'Nombre': self.name,
                  'Passw': self.passw,
                  'Path': self.path,
-                 'Eventos': self.events
+                 'Eventos': list(self.events)
                 }
         return Data

@@ -5,7 +5,7 @@ from datetime import datetime, date, time, timedelta
 
 class Events: ### Los eventos seran un tipo, con ciertos atributos y  ciertas restricciones.
     def __init__(self, fecha : str):
-        self.fecha = datetime.strptime(fecha, '%d/%m/%Y---%H:%M')
+        self.fecha = datetime.strptime(fecha, '%d/%m/%Y --- %H:%M')
 
 
 class travel_Habana(Events): ### tipo evento de viajes a la habana.
@@ -24,8 +24,8 @@ class travel_Habana(Events): ### tipo evento de viajes a la habana.
     
     def __dict__ (self):
         Data = {'Nombre': self.name,
-                'Fecha inicio': datetime.strftime(self.fecha, '%d/%m/%Y - %H:%M'),
-                'Fecha fin': datetime.strftime(self.Finish_date, '%d/%m/%Y - %H:%M'),
+                'Fecha inicio': datetime.strftime(self.fecha, '%d/%m/%Y --- %H:%M'),
+                'Fecha fin': datetime.strftime(self.Finish_date, '%d/%m/%Y --- %H:%M'),
                 'Recursos': self.Recursos
                  }
         return Data
@@ -47,8 +47,8 @@ class travel_Gto(Events): ### tipo evento de viajes a la Gto.
     
     def __dict__ (self):
         Data = {'Nombre': self.name,
-                'Fecha inicio': datetime.strftime(self.fecha, '%d/%m/%Y - %H:%M'),
-                'Fecha fin': datetime.strftime(self.Finish_date, '%d/%m/%Y - %H:%M'),
+                'Fecha inicio': datetime.strftime(self.fecha, '%d/%m/%Y --- %H:%M'),
+                'Fecha fin': datetime.strftime(self.Finish_date, '%d/%m/%Y --- %H:%M'),
                 'Recursos': self.Recursos
                  }
         return Data
@@ -70,8 +70,8 @@ class travel_Stgo(Events): ### tipo evento de viajes a la Stgo de Cuba.
     
     def __dict__ (self):
         Data = {'Nombre': self.name,
-                'Fecha inicio': datetime.strftime(self.fecha, '%d/%m/%Y - %H:%M'),
-                'Fecha fin': datetime.strftime(self.Finish_date, '%d/%m/%Y - %H:%M'),
+                'Fecha inicio': datetime.strftime(self.fecha, '%d/%m/%Y --- %H:%M'),
+                'Fecha fin': datetime.strftime(self.Finish_date, '%d/%m/%Y --- %H:%M'),
                 'Recursos': self.Recursos
                  }
         return Data
@@ -93,8 +93,8 @@ class travel_Camaguey(Events): ### tipo evento de viajes a Camaguey.
     
     def __dict__ (self):
         Data = {'Nombre': self.name,
-                'Fecha inicio': datetime.strftime(self.fecha, '%d/%m/%Y - %H:%M'),
-                'Fecha fin': datetime.strftime(self.Finish_date, '%d/%m/%Y - %H:%M'),
+                'Fecha inicio': datetime.strftime(self.fecha, '%d/%m/%Y --- %H:%M'),
+                'Fecha fin': datetime.strftime(self.Finish_date, '%d/%m/%Y --- %H:%M'),
                 'Recursos': self.Recursos
                  }
         return Data
@@ -116,8 +116,8 @@ class travel_Las_Tunas(Events): ### tipo evento de viajes a Las Tunas.
     
     def __dict__ (self):
         Data = {'Nombre': self.name,
-                'Fecha inicio': datetime.strftime(self.fecha, '%d/%m/%Y - %H:%M'),
-                'Fecha fin': datetime.strftime(self.Finish_date, '%d/%m/%Y - %H:%M'),
+                'Fecha inicio': datetime.strftime(self.fecha, '%d/%m/%Y --- %H:%M'),
+                'Fecha fin': datetime.strftime(self.Finish_date, '%d/%m/%Y --- %H:%M'),
                 'Recursos': self.Recursos
                  }
         return Data
@@ -138,8 +138,8 @@ class travel_Las_Villas(Events): ### tipo evento de viajes a Las Villas.
     
     def __dict__ (self):
         Data = {'Nombre': self.name,
-                'Fecha inicio': datetime.strftime(self.fecha, '%d/%m/%Y - %H:%M'),
-                'Fecha fin': datetime.strftime(self.Finish_date, '%d/%m/%Y - %H:%M'),
+                'Fecha inicio': datetime.strftime(self.fecha, '%d/%m/%Y --- %H:%M'),
+                'Fecha fin': datetime.strftime(self.Finish_date, '%d/%m/%Y --- %H:%M'),
                 'Recursos': self.Recursos
                  }
         return Data
@@ -160,8 +160,8 @@ class travel_Pinar_Rio(Events): ### tipo evento de viajes a Pinar del Rio.
     
     def __dict__ (self):
         Data = {'Nombre': self.name,
-                'Fecha inicio': datetime.strftime(self.fecha, '%d/%m/%Y - %H:%M'),
-                'Fecha fin': datetime.strftime(self.Finish_date, '%d/%m/%Y - %H:%M'),
+                'Fecha inicio': datetime.strftime(self.fecha, '%d/%m/%Y --- %H:%M'),
+                'Fecha fin': datetime.strftime(self.Finish_date, '%d/%m/%Y --- %H:%M'),
                 'Recursos': self.Recursos
                  }
         return Data
@@ -182,8 +182,8 @@ class travel_Mtz(Events): ### tipo evento de viajes a Matanzas.
     
     def __dict__ (self):
         Data = {'Nombre': self.name,
-                'Fecha inicio': datetime.strftime(self.fecha, '%d/%m/%Y - %H:%M'),
-                'Fecha fin': datetime.strftime(self.Finish_date, '%d/%m/%Y - %H:%M'),
+                'Fecha inicio': datetime.strftime(self.fecha, '%d/%m/%Y --- %H:%M'),
+                'Fecha fin': datetime.strftime(self.Finish_date, '%d/%m/%Y --- %H:%M'),
                 'Recursos': self.Recursos
                  }
         return Data
@@ -204,8 +204,8 @@ class travel_Cienfuegos(Events): ### tipo evento de viajes a Cienfuegos.
     
     def __dict__ (self):
         Data = {'Nombre': self.name,
-                'Fecha inicio': datetime.strftime(self.fecha, '%d/%m/%Y - %H:%M'),
-                'Fecha fin': datetime.strftime(self.Finish_date, '%d/%m/%Y - %H:%M'),
+                'Fecha inicio': datetime.strftime(self.fecha, '%d/%m/%Y --- %H:%M'),
+                'Fecha fin': datetime.strftime(self.Finish_date, '%d/%m/%Y --- %H:%M'),
                 'Recursos': self.Recursos
                  }
         return Data
@@ -225,8 +225,8 @@ class Mantenimiento_Vehiculos(Events): ### tipo evento de Mantenimiento de vehic
         self.Recursos = list(Recursos)
     def __dict__ (self):
         Data = {'Nombre': self.name,
-                'Fecha inicio': datetime.strftime(self.fecha, '%d/%m/%Y - %H:%M'),
-                'Fecha fin': datetime.strftime(self.Finish_date, '%d/%m/%Y - %H:%M'),
+                'Fecha inicio': datetime.strftime(self.fecha, '%d/%m/%Y --- %H:%M'),
+                'Fecha fin': datetime.strftime(self.Finish_date, '%d/%m/%Y --- %H:%M'),
                 'Recursos': self.Recursos
                  }
         return Data
@@ -248,8 +248,8 @@ class Botear_Habana(Events): ### tipo evento de Botear en la Habana.
     
     def __dict__ (self):
         Data = {'Nombre': self.name,
-                'Fecha inicio': datetime.strftime(self.fecha, '%d/%m/%Y - %H:%M'),
-                'Fecha fin': datetime.strftime(self.Finish_date, '%d/%m/%Y - %H:%M'),
+                'Fecha inicio': datetime.strftime(self.fecha, '%d/%m/%Y --- %H:%M'),
+                'Fecha fin': datetime.strftime(self.Finish_date, '%d/%m/%Y --- %H:%M'),
                 'Recursos': self.Recursos
                  }
         return Data
