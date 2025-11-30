@@ -115,5 +115,63 @@ def inicializar_user (data_user, path):
     user = User(nombre, passw, path_r, eventos)
     return user
             
+def try_option (max, min = 1): ###Para los errores que pudiera generar el int(input())
+    while True:
+        try:
+            option = int(input())
+            if  option > max or option < min:
+                print('El valor no esta en el intervalo esperado.\nVuelva a introducirlo.')
+                continue
+            return option
+        except Exception:
+            print('El valor introducido ha generado un error.\nVuelva a introducirlo.')
+
+def printeo_opciones_eventos(): ###Printea los posibles eventos
+    print('1. Viaje a la Habana.')
+    print('2. Viaje a Guantanamo.')
+    print('3. Viaje a Santiago de Cuba.')
+    print('4. Viaje a Camaguey.')
+    print('5. Viaje a Las Tunas.')
+    print('6. Viaje a Las Villas.')
+    print('7. Viaje a Pinar del Rio.')
+    print('8. Viaje a Matanzas.')
+    print('9. Viaje a Cienfuegos.')
+    print('10. Mantenimiento de Vehiculos.')
+    print('11. Boteo en la Habana.')
+
+def dividir_lista_str(lista): ###la implemente yo porque no tengo megas y se que existe pero no se cual es.
+    string = ''
+    for idx, x in enumerate(lista):
+        string += str(x)
+        if idx == len(lista) -1:
+            return string
+        string += ', '
 
 
+def agrego_eventos(option): ###Agregar eventos
+    print('Dime los Recursos que emplearas para este Evento.')
+    if option == 1:
+        even_temporal = Events.travel_Habana('10/10/2005 --- 12:40', 1)
+        print(f'Este en especifico necesita de {dividir_lista_str(even_temporal.Needs)}. \nTambien en este viaje\
+              no pueden estar juntos ')
+
+    elif option == 2:
+        pass
+    elif option == 3:
+        pass
+    elif option == 4:
+        pass
+    elif option == 5:
+        pass
+    elif option == 6:
+        pass
+    elif option == 7:
+        pass
+    elif option == 8:
+        pass
+    elif option == 9:
+        pass
+    elif option == 10:
+        pass
+    elif option == 11:
+        pass

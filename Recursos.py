@@ -1,6 +1,8 @@
 import json
 from pathlib import Path
 from datetime import datetime, date, time, timedelta
+from user import User
+import Events
 
 
 class Recurso:
