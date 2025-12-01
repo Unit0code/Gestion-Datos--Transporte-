@@ -39,21 +39,27 @@ while True:
                     print('6. Salir al menu principal.')
 
                     option = funtion.try_option(6)
-                    if option == 1: ### ver los eventos
+                    if option == 1: ### Agrega eventos como al usuario le plazca
                         print('Tienes para agregar:')
-                        funtion.printeo_opciones_eventos()
+                        funtion.printeo_opciones_eventos() ### printea las opciones
                         option = funtion.try_option(11)
-                        Usuario, Recursos_disponibles = funtion.agrego_eventos(option, Recursos_disponibles, Usuario)
-                    
-                    
+                        try:    ###hace todo el proceso de arreglo
+                            Usuario, Recursos_disponibles = funtion.agrego_eventos(option, Recursos_disponibles, Usuario) 
+                        except Exception:
+                            pass
+
                     elif option == 2:
                         pass
+                    
                     elif option == 3:
                         pass
+                    
                     elif option == 4:
                         pass
+                    
                     elif option == 5:
                         pass
+                    
                     elif option == 6:
                         ###guardar el perfil
                         break
@@ -62,6 +68,9 @@ while True:
                 continue
             elif option == 3: ### Rompe el bucle y vuelve al menu inicial.
                 break
+            
+            if option == 6: ###Esta opcion solo entrara en ella cuando haya estado ya en la cuenta
+                break       ### y haya posterior a eso
 
 
     elif option == 2:

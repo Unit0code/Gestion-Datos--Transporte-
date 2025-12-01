@@ -159,7 +159,7 @@ def verificador_fecha():
                 continue
             return fecha
         except Exception:
-            print('Ha Habido un error. Introduce una fecha en el formato solicitado')
+            print('Ha habido un error. Introduce una fecha en el formato solicitado')
 
 def verificador_restricciones(evento): ### chequea especificamente las restricciones solitarias
     for recursos in evento.Recursos:
@@ -227,45 +227,58 @@ def actualizacion_recursos_disponibles(evento, recursos_disponibles): ### Actual
         nuevos_recursos_disponibles.append(recursos_disp)
     return nuevos_recursos_disponibles
 
-
-def agrego_eventos(option, recursos_disponibles, user: User): ###Agregar eventos
-    print('Dime los Recursos que emplearas para este Evento.')
-    if option == 1:
-        
-        even_temporal = Events.travel_Habana('10/10/2005 --- 12:40', 1) ###inicializo una instancia cualquiera temporal
-        restr1, restr2 = even_temporal.Restriction_recursos_pares
-        lista_recursos = [] ### aqui iran los recursos que el usuario decida
-
-        print(f'Este en especifico necesita de {dividir_lista_str(even_temporal.Needs)}. \nTambien en este viaje\
- no pueden estar juntos {dividir_lista_str(restr1)} o {dividir_lista_str(restr2)}')
-        print('Toma los que necesites.')
-        print('Escribe 0 para avisar que ya terminaste.')
-        
+def aux_agregar_eventos(lista_recursos, recursos_disponibles, user: User):
         for idx, recurso in enumerate(recursos_disponibles): ### muestra los recursos disponibles
             print(f'{idx+1}. {recurso.nombre} es un {recurso.categoria}')
         while True:
+            print('Introduce 0 para salir.')
             input_user = try_option(len(recursos_disponibles), 0)
-            lista_recursos.append(recursos_disponibles[input_user - 1])
+            
+            if not (recursos_disponibles[input_user - 1] in lista_recursos): ### para que no se repitan
+                lista_recursos.append(recursos_disponibles[input_user - 1]) 
+                print(f'Agregaste a recursos para este evento a {recursos_disponibles[input_user -1].nombre}.')
+            else:
+                print('Ya annadiste ese recurso.') ###
+            
             if input_user == 0:  ### el usuario elige entre todos los recursos disponibles
                 break
         
         print('Y para cuando lo deseas?')
         fecha = verificador_fecha() ### verifica que la fecha este en el formato correcto
-        evento_final = Events.travel_Habana(fecha, *lista_recursos) ### crea el evento
-        
-        if verificador_validez_nuevo_evento(evento_final): ###verifica si no tiene problemas y lo agrega a los eventos del usuario
-            user.events.append(evento_final)
-            print('Se ha agregado el evento a la agenda.')
-            recursos_disponibles = actualizacion_recursos_disponibles(evento_final, recursos_disponibles) ### actualizo los recursos disponibles
-            del even_temporal
-            del evento_final
-            return user, recursos_disponibles
-        else:
-            print('El evento no se ha agendado por incumplir ciertos parametros. Vuelva a intentarlo.')
-            del even_temporal
-            del evento_final
-            return None
+        return fecha, lista_recursos 
 
+def aux_agregar_eventos2(evento_final, user, recursos_disponibles):
+    
+    if verificador_validez_nuevo_evento(evento_final): ###verifica si no tiene problemas y lo agrega a los eventos del usuario
+        user.events.append(evento_final)
+        print('Se ha agregado el evento a la agenda.')
+        recursos_disponibles = actualizacion_recursos_disponibles(evento_final, recursos_disponibles) ### actualizo los recursos disponibles
+        return user, recursos_disponibles
+    else:
+        print('El evento no se ha agendado por incumplir ciertos parametros. Vuelva a intentarlo.')
+        return None
+
+def agrego_eventos(option, recursos_disponibles, user: User): ###Agregar eventos
+    print('Dime los Recursos que emplearas para este Evento.')
+    
+    if option == 1:
+        
+        even_temporal = Events.travel_Habana('10/10/2005 --- 12:40', 1) ###inicializo una instancia cualquiera temporal
+        restr1, restr2 = even_temporal.Restriction_recursos_pares  ### tomo las restricciones de pares
+        lista_recursos = [] ### aqui iran los recursos que el usuario decida
+
+        print(f'Este en especifico necesita de {dividir_lista_str(even_temporal.Needs)}. \nTambien en este viaje\
+        no pueden estar juntos {dividir_lista_str(restr1)} o {dividir_lista_str(restr2)}')
+        print('Toma los que necesites.')
+        print('Escribe 0 para avisar que ya terminaste.')
+        
+        fecha, lista_recursos = aux_agregar_eventos(lista_recursos, recursos_disponibles, user) ### auxiliar de esta funcion
+        evento_final = Events.travel_Habana(fecha, *lista_recursos)
+        try:
+            user, recursos_disponibles = aux_agregar_eventos2(evento_final, user, recursos_disponibles) ## 2do auxiliar
+        except Exception:
+            pass
+        return user, recursos_disponibles 
 
     elif option == 2:
         pass
