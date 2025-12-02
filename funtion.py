@@ -40,7 +40,7 @@ def cargar_json (path : str):
     
 def inicializar_obj_cargados (data_user): ### cuando cargue el archivo, se deben inicializar todos los tipos
     Eventos = data_user.get('Eventos', False)
-    if not Eventos: ###si no existe la llave
+    if not Eventos and type([]) != type(Eventos): ###si no existe la llave y no es una lista vacia
         return False
     for idx, evento_p in enumerate(Eventos): ### por cada evento
         for llave, valor in evento_p.items(): ### vere las caracteristicas de dicho evento
@@ -56,7 +56,7 @@ def inicializar_obj_cargados (data_user): ### cuando cargue el archivo, se deben
 
 def inicializar_eventos (data_user):
     Eventos = data_user.get('Eventos', False)
-    if not Eventos:
+    if not Eventos and type([]) != type(Eventos):  ### si no existe la llave o no es una lista vacia
         return False
     for idx, evento_p in enumerate(Eventos): ### tomo sus atributos
         nombre = evento_p['Nombre']
@@ -165,6 +165,7 @@ def verificador_fecha():
             print('Ha habido un error. Introduce una fecha en el formato solicitado')
 
 def verificador_restricciones(evento): ### chequea especificamente las restricciones solitarias
+    clear()
     for recursos in evento.Recursos:
         for restr, mssg in evento.Restriction_recursos.items(): ###ve las restricciones que hay y si coinciden con los nombre
             if recursos.nombre == restr:                        ### de los recursos
@@ -483,9 +484,11 @@ def eliminar_eventos (user: User, recursos_disponibles): ###eliminara un evento 
     if option == 1:
         recursos_disponibles = cargar_recursos_disponibles(recursos_disponibles, [user.events[option-1]]) # pone en disponibilidad
         del user.events[option - 1]                                                                 ### los recursos del evento que sera eliminado
+        clear()                                                                
         print('Ha sido eliminado el evento.')                                             
         return user, recursos_disponibles
     else:
+        clear()
         print('Ok. Entonces volvamos.')
         return user
 
@@ -543,4 +546,12 @@ def barra_de_progreso(): ###por hacer algo chulo
 
 def clear(): ###limpia la pantalla
     time.sleep(0.4)
-    os.system('cls')               
+    os.system('cls')      
+
+def verificador_passw(passw : str, user:User):
+    return passw == user.passw         ### verifica si la contrasenna es igual.
+
+def actualizacion_recursos_cargar_usuario(user:User, recursos_disponibles): ### cada vez que se cargue un perfil, los recursos que estan
+    for evento in user.events:                                          ### en uso tienen que ser eliminados de la disponibilidad
+        recursos_disponibles = actualizacion_recursos_disponibles(evento, recursos_disponibles) ### voy actualizando los recursos por cada evento
+    return recursos_disponibles

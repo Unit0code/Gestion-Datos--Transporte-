@@ -194,7 +194,7 @@ class travel_Cienfuegos(Events): ### tipo evento de viajes a Cienfuegos.
         super().__init__( fecha)
         self.name = 'Viaje a Cienfuegos'
         self.Restriction_hour = [ time(8), time(21) ] ###Restricciones de horario para iniciar el viaje.
-        self.Duration = timedelta(hours = 2)  ### duracion del viaje
+        self.Duration = timedelta(hours = 5)  ### duracion del viaje
         self.Finish_date = self.Duration + self.fecha ###fecha de finalizacion
         self.Restriction_recursos = {'camion2' : 'Ese es el bueno, deberiamos reservarlo para viajes largos.'} ### No pueden usarse para este evento.
         self.Restriction_recursos_pares = [('Jose', 'Marlon')] ###No pueden estar en el mismo Evento

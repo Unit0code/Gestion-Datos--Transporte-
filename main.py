@@ -97,15 +97,77 @@ while True:
         ###########################################funcion que cargue las posibles opciones de cuenta(archivos .json en la carpeta.)
             option = funtion.try_option(2)
             if option == 1:
-                path = input() ### el usuario introduce el nombre de usuario (y el path de esa cuenta es 'nombre'.json )
+                path = input('Usuario: ') ### el usuario introduce el nombre de usuario (y el path de esa cuenta es 'nombre'.json )
                 Usuario = funtion.cargar_json(path)
                 if not Usuario: ### devuelve False si no logra cargar el usuario.
                     print('Puede volverlo a intentar.')
                 else:
                     print('El Perfil ha sido encontrado, ahora necesitamos su contrasenna para verificar.')
-                    #### hacer una funcion que verifique que la contasenna sea igual a User.passw
-            
-            
+                    while True:
+                        passw = input('Contrasenna: ')
+                        if funtion.verificador_passw(passw, Usuario):  ### la contrasenna es la correcta y puede ejecutarse el programa.
+                            funtion.clear()
+                            Recursos_disponibles = funtion.actualizacion_recursos_cargar_usuario(Usuario, Recursos_disponibles)
+                            print(f'Bienvenido {Usuario.name}')
+                            while True:
+                                print('Que deseas?')
+                                print('1. Agregar Eventos a tu agenda.') 
+                                print('2. Eliminar Eventos de tu agenda.') 
+                                print('3. Ver los Eventos agendados.')
+                                print('4. Ver los Recursos y su disponibilidad.')
+                                print('5. Actualizar Agenda.')
+                                print('6. Salir al menu principal.')
+
+                                option = funtion.try_option(6)
+                                if option == 1: ### Agrega eventos como al usuario le plazca
+                                    print('Tienes para agregar:')
+                                    funtion.printeo_opciones_eventos() ### printea las opciones
+                                    option = funtion.try_option(11)
+                                    try:    ###hace todo el proceso de agrego
+                                        Usuario, Recursos_disponibles = funtion.agrego_eventos(option, Recursos_disponibles, Usuario) 
+                                    except Exception:
+                                        pass
+
+                                elif option == 2: ### eliminar eventos
+                                    print('Veamos cuales tienes y puedes eliminar.')
+                                    try:    
+                                        Usuario, Recursos_disponibles = funtion.eliminar_eventos(Usuario, Recursos_disponibles) ### se encarga de eliminar eventos.
+                                    except Exception:
+                                        pass
+
+                                elif option == 3: ### mostrar los eventos
+                                    funtion.clear()
+                                    print('Los Eventos agendados hasta el momento son:')
+                                    funtion.mostras_eventos(Usuario) ### indexa en los eventos con un for y los printea
+                                
+                                elif option == 4: ### mostrar los recursos disponibles
+                                    funtion.clear()
+                                    print('Los recursos disponibles en este momento son:')
+                                    funtion.mostrar_recursos(Recursos_disponibles)
+                                
+                                elif option == 5: ###actualizar los eventos
+                                    print('Veamos si no hay ningun Evento que ya haya expirado.')
+                                    try:
+                                        Usuario, Recursos_disponibles = funtion.verificador_estado_eventos(Usuario, Recursos_disponibles)
+                                    except Exception:
+                                        pass
+
+                                elif option == 6: ### salir al menu principal
+                                    print('Primero, guardemos el perfil, para asegurarnos de que no se pierda la info.')
+                                    funtion.guardar_json(Usuario)
+                                    funtion.barra_de_progreso()
+                                    print('Hecho.')
+                                    time.sleep(1.5) ### detiene el programa por 1.5 segundos
+                                    passw = 'salir' ### para que se ejecute el sgt if y salga al bucle principal
+                                    break
+                        if passw == 'salir':
+                            break  ### sale al menu de cargar nuevamente el usuario 
+                        else:
+                            print('No es la contrasenna. Vuelva a intentarlo o introduzca salir'
+                                  ' para volver al menu principal.')
+                    if passw == 'salir':
+                        break ### para salir al menu principal, solo se activa una vez estuviste dentro
+                              ### de la cuenta
             elif option == 2:
                 break ### Vuelve al bucle principal.
         
