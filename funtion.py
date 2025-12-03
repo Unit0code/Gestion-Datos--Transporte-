@@ -150,7 +150,7 @@ def dividir_lista_str(lista): ###la implemente yo porque no tengo megas y se que
             return string
         string += ', '
 
-def verificador_fecha():
+def verificador_fecha(duration_event):  ### recibe la duracion del evento para que me devuelva la fecha fin
     while True:
         print('Introduce la fecha en el formato DIA/MES/ANNO --- HORA:MINUTOS.')
         fecha = input()
@@ -160,7 +160,8 @@ def verificador_fecha():
             if string < fecha_hoy:
                 print('Esta fecha es anterior al dia de hoy. Vuelve a introducirla.')
                 continue
-            return fecha
+            fecha_fin = string + duration_event
+            return fecha, fecha_fin
         except Exception:
             print('Ha habido un error. Introduce una fecha en el formato solicitado')
 
@@ -218,21 +219,8 @@ def verificador_validez_nuevo_evento(evento): ###llama a todas las funciones que
     else:
         return True
 
-def actualizacion_recursos_disponibles(evento, recursos_disponibles): ### Actualiza los recursos (los quita especificamente de los q se usan un nuevo evento)
-    lista_nombres_recursos_evento = [] ### se ubicaran los recursos que se usan en el evento
-    nuevos_recursos_disponibles = []
-    
-    for recursos in evento.Recursos:
-        lista_nombres_recursos_evento.append(recursos.nombre)
-    
-    for recursos_disp in recursos_disponibles:
-        if recursos_disp.nombre in lista_nombres_recursos_evento:
-            continue
-        nuevos_recursos_disponibles.append(recursos_disp)
-    return nuevos_recursos_disponibles
-
-def aux_agregar_eventos(lista_recursos, recursos_disponibles, user: User):
-        for idx, recurso in enumerate(recursos_disponibles): ### muestra los recursos disponibles
+def aux_agregar_eventos(lista_recursos, recursos_disponibles):
+        for idx, recurso in enumerate(recursos_disponibles): ### muestra los recursos disponibles ahora
             print(f'{idx+1}. {recurso.nombre} es un {recurso.categoria}')
         while True:
             print('Introduce 0 para salir.')
@@ -245,44 +233,45 @@ def aux_agregar_eventos(lista_recursos, recursos_disponibles, user: User):
                 print(f'Agregaste a recursos para este evento a {recursos_disponibles[input_user -1].nombre}.')
             else:
                 print('Ya annadiste ese recurso.') ###
-        
-        print('Y para cuando lo deseas?')
-        fecha = verificador_fecha() ### verifica que la fecha este en el formato correcto
-        return fecha, lista_recursos 
 
-def aux_agregar_eventos2(evento_final, user, recursos_disponibles):
+        return lista_recursos 
+
+def aux_agregar_eventos2(evento_final, user):
     
     if verificador_validez_nuevo_evento(evento_final): ###verifica si no tiene problemas y lo agrega a los eventos del usuario
         user.events.append(evento_final)
         print('Se ha agregado el evento a la agenda.')
-        recursos_disponibles = actualizacion_recursos_disponibles(evento_final, recursos_disponibles) ### actualizo los recursos disponibles
-        return user, recursos_disponibles
+        return user
     else:
         print('El evento no se ha agendado por incumplir ciertos parametros. Vuelva a intentarlo.')
-        return None
+        return None, None  ###doble none para que de error y se ejecute el try-exception
 
 def agrego_eventos(option, recursos_disponibles, user: User): ###Agregar eventos
     clear()
-    print('Dime los Recursos que emplearas para este Evento.')
+    print('Dime la fecha en la que deseas realizarlo.')
     
     if option == 1: #Viaje a la Habana
         
         even_temporal = Events.travel_Habana('10/10/2005 --- 12:40', 1) ###inicializo una instancia cualquiera temporal
         restr1, restr2 = even_temporal.Restriction_recursos_pares  ### tomo las restricciones de pares
         lista_recursos = [] ### aqui iran los recursos que el usuario decida
+        fecha, fecha_fin = verificador_fecha(even_temporal.Duration) ### verifica que la fecha este en el formato correcto
 
+        print('Ahora dime los recursos que emplearas.')
         print(f'Este en especifico necesita de {dividir_lista_str(even_temporal.Needs)}. \nTambien en este viaje\
  no pueden estar juntos {dividir_lista_str(restr1)} o {dividir_lista_str(restr2)}')
         print('Toma los que necesites.')
         print('Escribe 0 para avisar que ya terminaste.')
         
-        fecha, lista_recursos = aux_agregar_eventos(lista_recursos, recursos_disponibles, user) ### auxiliar de esta funcion
+        #####  ##############################hacer una funcion que actualice los recursos disponibles en el horario este en especificooooooooo #######
+        recursos_disponibles_ahora = recursos_disponibles_horario_especifico(recursos_disponibles, user, fecha, fecha_fin)
+        lista_recursos = aux_agregar_eventos(lista_recursos, recursos_disponibles_ahora) ### auxiliar de esta funcion
         evento_final = Events.travel_Habana(fecha, *lista_recursos)
         try:
-            user, recursos_disponibles = aux_agregar_eventos2(evento_final, user, recursos_disponibles) ## 2do auxiliar
+            user = aux_agregar_eventos2(evento_final, user) ## 2do auxiliar
         except Exception:
             pass
-        return user, recursos_disponibles 
+        return user
 
     elif option == 2: #viaje a guantanamo
         even_temporal = Events.travel_Gto('10/10/2005 --- 12:40', 1) ###inicializo una instancia cualquiera temporal
@@ -463,7 +452,7 @@ def agrego_eventos(option, recursos_disponibles, user: User): ###Agregar eventos
             pass
         return user, recursos_disponibles
 
-def eliminar_eventos (user: User, recursos_disponibles): ###eliminara un evento de los agregados en el atributo eventos del user
+def eliminar_eventos (user: User): ###eliminara un evento de los agregados en el atributo eventos del user
     clear()
     for idx, evento in enumerate(user.events):
         print(f'{idx + 1}. {evento.name}:    fecha de inicio -> {evento.fecha} \nfecha de finalizacion -> {evento.Finish_date}')
@@ -482,11 +471,10 @@ def eliminar_eventos (user: User, recursos_disponibles): ###eliminara un evento 
     print('2. No')
     option = try_option(2) 
     if option == 1:
-        recursos_disponibles = cargar_recursos_disponibles(recursos_disponibles, [user.events[option-1]]) # pone en disponibilidad
-        del user.events[option - 1]                                                                 ### los recursos del evento que sera eliminado
+        del user.events[option - 1]
         clear()                                                                
         print('Ha sido eliminado el evento.')                                             
-        return user, recursos_disponibles
+        return user
     else:
         clear()
         print('Ok. Entonces volvamos.')
@@ -509,7 +497,7 @@ def mostrar_recursos(recursos_disponibles):
         print(f'{idx + 1}. {recurso.nombre}:   categoria -> {recurso.categoria}, estado -> {recurso.estado}')
     print('                     ')
 
-def verificador_estado_eventos (user: User, recursos_disponibles):
+def verificador_estado_eventos (user: User):
     clear()
     eventos_expirados = []
     fecha_hoy = datetime.today() ###creo la fecha de ese momento
@@ -526,15 +514,7 @@ def verificador_estado_eventos (user: User, recursos_disponibles):
     for evento in eventos_expirados:
         idx = user.events.index(evento)
         del user.events[idx] ### lo elimino de los atributos del usuario
-    recursos_disponibles = cargar_recursos_disponibles(recursos_disponibles, eventos_expirados) ### pone a disponibilidad los recursos
-    return user, recursos_disponibles
-
-
-def cargar_recursos_disponibles(recursos_disponibles, eventos: list):### se encarga de llevar los recursos de eventos 
-    for evento in eventos:                                          ###expirados nuevamente a disponibilidad
-        for recurso in evento.Recursos:
-            recursos_disponibles.append(recurso)
-    return recursos_disponibles
+    return user
 
 def barra_de_progreso(): ###por hacer algo chulo
     a = '.'
@@ -551,7 +531,17 @@ def clear(): ###limpia la pantalla
 def verificador_passw(passw : str, user:User):
     return passw == user.passw         ### verifica si la contrasenna es igual.
 
-def actualizacion_recursos_cargar_usuario(user:User, recursos_disponibles): ### cada vez que se cargue un perfil, los recursos que estan
-    for evento in user.events:                                          ### en uso tienen que ser eliminados de la disponibilidad
-        recursos_disponibles = actualizacion_recursos_disponibles(evento, recursos_disponibles) ### voy actualizando los recursos por cada evento
-    return recursos_disponibles
+def recursos_disponibles_horario_especifico(recursos_disponibles,user:User,fecha: str, fecha_fin): ### verificara 
+    fecha = datetime.strptime(fecha,'%d/%m/%Y --- %H:%M')                                       ###que recursos estan disponibles en un horario dado
+    recursos_disponibles_ahora = []  ###agregare los recursos disponibles en ese horario
+    recursos_en_uso = []
+    for evento in user.events:                                                                  
+        if evento.fecha <= fecha_fin and evento.Finish_date  >= fecha: ### condicion para que dos intervalos de tiempo colisionen
+            for recurso in evento.Recursos:  ### indexo en los recursos del evento si colisionan
+                recursos_en_uso.append(recurso.nombre) ### le agrego el nombre de cada recursos en uso
+    for recurso_disp in recursos_disponibles:
+        if recurso_disp.nombre in recursos_en_uso: ### si el nombre de dicho recurso esta en uso, no lo agregues
+            continue
+        else:  
+            recursos_disponibles_ahora.append(recurso_disp) ### agrega los que no estan en uso
+    return recursos_disponibles_ahora

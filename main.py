@@ -47,14 +47,14 @@ while True:
                         funtion.printeo_opciones_eventos() ### printea las opciones
                         option = funtion.try_option(11)
                         try:    ###hace todo el proceso de agrego
-                            Usuario, Recursos_disponibles = funtion.agrego_eventos(option, Recursos_disponibles, Usuario) 
+                            Usuario = funtion.agrego_eventos(option, Recursos_disponibles, Usuario) 
                         except Exception:
                             pass
 
                     elif option == 2: ### eliminar eventos
                         print('Veamos cuales tienes y puedes eliminar.')
                         try:    
-                            Usuario, Recursos_disponibles = funtion.eliminar_eventos(Usuario, Recursos_disponibles) ### se encarga de eliminar eventos.
+                            Usuario= funtion.eliminar_eventos(Usuario) ### se encarga de eliminar eventos.
                         except Exception:
                             pass
 
@@ -69,7 +69,7 @@ while True:
                     elif option == 5: ###actualizar los eventos
                         print('Veamos si no hay ningun Evento que ya haya expirado.')
                         try:
-                            Usuario, Recursos_disponibles = funtion.verificador_estado_eventos(Usuario, Recursos_disponibles)
+                            Usuario = funtion.verificador_estado_eventos(Usuario)
                         except Exception:
                             pass
 
@@ -107,7 +107,6 @@ while True:
                         passw = input('Contrasenna: ')
                         if funtion.verificador_passw(passw, Usuario):  ### la contrasenna es la correcta y puede ejecutarse el programa.
                             funtion.clear()
-                            Recursos_disponibles = funtion.actualizacion_recursos_cargar_usuario(Usuario, Recursos_disponibles)
                             print(f'Bienvenido {Usuario.name}')
                             while True:
                                 print('Que deseas?')
@@ -124,14 +123,14 @@ while True:
                                     funtion.printeo_opciones_eventos() ### printea las opciones
                                     option = funtion.try_option(11)
                                     try:    ###hace todo el proceso de agrego
-                                        Usuario, Recursos_disponibles = funtion.agrego_eventos(option, Recursos_disponibles, Usuario) 
+                                        Usuario = funtion.agrego_eventos(option, Recursos_disponibles, Usuario) 
                                     except Exception:
                                         pass
 
                                 elif option == 2: ### eliminar eventos
                                     print('Veamos cuales tienes y puedes eliminar.')
                                     try:    
-                                        Usuario, Recursos_disponibles = funtion.eliminar_eventos(Usuario, Recursos_disponibles) ### se encarga de eliminar eventos.
+                                        Usuario = funtion.eliminar_eventos(Usuario) ### se encarga de eliminar eventos.
                                     except Exception:
                                         pass
 
@@ -148,7 +147,7 @@ while True:
                                 elif option == 5: ###actualizar los eventos
                                     print('Veamos si no hay ningun Evento que ya haya expirado.')
                                     try:
-                                        Usuario, Recursos_disponibles = funtion.verificador_estado_eventos(Usuario, Recursos_disponibles)
+                                        Usuario= funtion.verificador_estado_eventos(Usuario)
                                     except Exception:
                                         pass
 
