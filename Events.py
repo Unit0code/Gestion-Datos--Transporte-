@@ -253,11 +253,3 @@ class Botear_Habana(Events): ### tipo evento de Botear en la Habana.
                 'Recursos': self.Recursos
                  }
         return Data
-
-    
-
-
-
-#####Por ahora tengo lo basico, 11 eventos, entre viajes a prov
-##### y tres variados, (pensar despues en implementar lo del dinero y
-##### lo de los eventos pasivos ???
