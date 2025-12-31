@@ -9,7 +9,7 @@ class User: ###Se inicializa el usuario una vez cargue el .json o cree una cuent
         self.passw = passw
         self.path = path
         self.events = events
-    
+
     def __dict__(self):
         Data = { 'Nombre': self.name,
                  'Passw': self.passw,

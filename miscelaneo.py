@@ -12,7 +12,7 @@ def recomendador_cuentas (): ### lee los archivos en la carpeta del proyecto y v
     contenido = os.listdir(ruta_relativa)
     archivos_json = []
 
-    clear()
+    clean()
     for nombre in contenido:
         if nombre.endswith('.json'):
             archivos_json.append(nombre)
@@ -38,7 +38,7 @@ def try_option (max, min = 1): ###Para los errores que pudiera generar el int(in
         except Exception:
             print('El valor introducido ha generado un error.\nVuelva a introducirlo.')
 
-def clear(): ###limpia la pantalla
+def clean(): ###limpia la pantalla
     time.sleep(0.2)
     os.system('cls')
 
@@ -51,10 +51,14 @@ def barra_de_progreso(): ###por hacer algo chulo
         print('           ', end= '\r')
 
 def mostrar_recursos(recursos_disponibles, user: User):
-    clear()
+    clean()
     
     for idx, recurso in enumerate(recursos_disponibles):  ### veo todos los recursos
         print(f'{idx + 1}. {recurso.nombre}:   categoria -> {recurso.categoria}, estado -> {recurso.estado}')
+        if recurso.categoria == 'Vehiculo':
+            print(f'Usos restantes: {recurso.usos}')
+        else:
+            print(f'Energia: {recurso.energia}')
         ver, horarios = check_uso(recurso, user.events)
         if ver:
             print('El recurso no estara disponible en los horarios: ')
@@ -77,14 +81,29 @@ def check_uso(recurso, eventos: list):
         return True, horarios 
 
 def verificador_estado_eventos (user: User):
-    clear()
+    clean()
     eventos_expirados = []
+    recurso_usados = []
+    recursos_renovados = []
     fecha_hoy = datetime.today() ###creo la fecha de ese momento
 
     for idx, eventos in enumerate(user.events):  
         if eventos.Finish_date < fecha_hoy: ###chequeo si la fecha ya es pasada
             eventos_expirados.append(eventos) ###La agrego a eventos expirados
             print(f'Expiro {eventos.name}.')
+
+            if eventos.name != 'Mantenimiento de Vehiculos' and eventos.name != 'Descanso pagado a los trabajadores':
+                for recurso in eventos.Recursos: ### analizare que recursos se usaron para descontar a energia o uso
+                    recurso_usados.append(recurso)
+            else:
+                for recurso in eventos.Recursos: ### se ejecuta cuando son las actividades de renovacion de estado
+                    if eventos.name == 'Mantenimiento de Vehiculos' and recurso.categoria == 'Vehiculo':
+                        recursos_renovados.append(recurso) ### en el mantenimiento tambien hay mecanicos, y ellos si se cansan
+                        continue                           ### por eso la diferenciacion
+                    elif eventos.name == 'Mantenimiento de Vehiculos':
+                        recurso_usados.append(recurso)
+                        continue
+                    recursos_renovados.append(recurso)
     
     if not eventos_expirados: ###si la lista esta vacia solo regresara False
         print('No ha expirado ningun evento.')
@@ -93,4 +112,32 @@ def verificador_estado_eventos (user: User):
     for evento in eventos_expirados:
         idx = user.events.index(evento)
         del user.events[idx] ### lo elimino de los atributos del usuario
-    return user
+    return user, recurso_usados, recursos_renovados
+
+def actualizar_estado_recursos (Recursos_disponibles, recursos_recien_usados, recursos_renovados): ### actualizare el estado de cada recurso
+    for recurso in recursos_recien_usados:
+        for recurso2 in Recursos_disponibles:
+            if recurso.nombre == recurso2.nombre and recurso2.categoria == 'Vehiculo': ### disminuyo el uso en uno
+                recurso2.usos -= 1
+                if recurso2.usos <3:
+                    recurso2.estado = 'Deplorable'
+                if recurso2.usos == 0:
+                    recurso2.estado = 'Roto' ### cambiandole el estado al vehiculo
+            
+            elif recurso.nombre == recurso2.nombre: ### disminuyo la energia en 20 por cada evento
+                recurso2.energia -= 20
+                if recurso2.energia < 50:
+                    recurso2.estado = 'Cansado'
+                if recurso2.energia == 0:
+                    recurso2.estado = 'Agotado'  ### cambio el estado segun la cantidad de energia que posea
+    
+    for recurso in recursos_renovados: ### renueva los recursos
+        for recurso2 in Recursos_disponibles: ### funcionan especificamente para los eventos 'Vacaciones' y 'Mantenimiento'
+            if recurso.nombre == recurso2.nombre and recurso2.categoria == 'Vehiculo':
+                recurso2.usos = 5
+                recurso2.estado = 'OK'
+            elif recurso.nombre == recurso2.nombre:
+                recurso2.energia = 100
+                recurso2.estado = 'OK'
+    
+    return Recursos_disponibles

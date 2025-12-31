@@ -2,6 +2,8 @@ import json
 from pathlib import Path
 from datetime import datetime, date, time, timedelta
 
+### este archivo solo posee los tipos eventos, todos con mismas propiedades, diferente nombre 
+### y valores diferentes asignados a cada propiedad.
 
 class Events: ### Los eventos seran un tipo, con ciertos atributos y  ciertas restricciones.
     def __init__(self, fecha : str):
@@ -13,7 +15,7 @@ class travel_Habana(Events): ### tipo evento de viajes a la habana.
         super().__init__( fecha)
         self.name = 'Viaje a la Habana'
         self.Restriction_hour = [ time(8), time(21) ] ###Restricciones de horario para iniciar el viaje.
-        self.Duration = timedelta(hours = 2)  ### duracion del viaje
+        self.Duration = timedelta(hours= 2)  ### duracion del viaje
         self.Finish_date = self.Duration + self.fecha ###fecha de finalizacion
         self.Restriction_recursos = {} ### No pueden usarse para este evento.
         self.Restriction_recursos_pares = [('Suarez', 'Menedez'), ('Jose', 'Marlon')]  ###No pueden estar en el mismo Evento
@@ -36,7 +38,7 @@ class travel_Gto(Events): ### tipo evento de viajes a la Gto.
         super().__init__( fecha)
         self.name = 'Viaje a Guantanamo'
         self.Restriction_hour = [ time(8), time(21) ] ###Restricciones de horario para iniciar el viaje.
-        self.Duration = timedelta(hours = 18)  ### duracion del viaje
+        self.Duration = timedelta(hours= 18)  ### duracion del viaje
         self.Finish_date = self.Duration + self.fecha ###fecha de finalizacion
         self.Restriction_recursos = {'Juan' : 'No se le dan los viajes largos.'} ### No pueden usarse para este evento.
         self.Restriction_recursos_pares = [('Pedro', 'Rigoberto'), ('Jose', 'Marlon')] ###No pueden estar en el mismo Evento
@@ -211,27 +213,6 @@ class travel_Cienfuegos(Events): ### tipo evento de viajes a Cienfuegos.
         return Data
 
 
-class Mantenimiento_Vehiculos(Events): ### tipo evento de Mantenimiento de vehiculos.
-    def __init__ (self, fecha, *Recursos):
-        super().__init__( fecha)
-        self.name = 'Mantenimiento de Vehiculos'
-        self.Restriction_hour = [ time(8), time(17) ] ###Restricciones de horario para iniciar el viaje.
-        self.Duration = timedelta(hours = 5)  ### duracion del viaje
-        self.Finish_date = self.Duration + self.fecha ###fecha de finalizacion
-        self.Restriction_recursos = {} ### No pueden usarse para este evento.
-        self.Restriction_recursos_pares = [('Marlon', 'Diego')] ###No pueden estar en el mismo Evento
-        self.message = ['No hacen falta tantos admins pendientes, seria perdida de tiempo.'] ### Mensaje de las restricciones
-        self.Needs = ['Vehiculo', 'Suarez', 'Jose']  ###lo necesario de los nombres de los recursos para iniciar el viaje.
-        self.Recursos = list(Recursos)
-    def __dict__ (self):
-        Data = {'Nombre': self.name,
-                'Fecha inicio': datetime.strftime(self.fecha, '%d/%m/%Y --- %H:%M'),
-                'Fecha fin': datetime.strftime(self.Finish_date, '%d/%m/%Y --- %H:%M'),
-                'Recursos': self.Recursos
-                 }
-        return Data
-    
-
 class Botear_Habana(Events): ### tipo evento de Botear en la Habana.
     def __init__ (self, fecha, *Recursos):
         super().__init__( fecha)
@@ -244,6 +225,52 @@ class Botear_Habana(Events): ### tipo evento de Botear en la Habana.
         self.Restriction_recursos_pares = [] ###No pueden estar en el mismo Evento
         self.message = [] ### Mensaje de las restricciones
         self.Needs = ['Vehiculo', 'Conductor']  ###lo necesario de los nombres de los recursos para iniciar el viaje.
+        self.Recursos = list(Recursos)
+    
+    def __dict__ (self):
+        Data = {'Nombre': self.name,
+                'Fecha inicio': datetime.strftime(self.fecha, '%d/%m/%Y --- %H:%M'),
+                'Fecha fin': datetime.strftime(self.Finish_date, '%d/%m/%Y --- %H:%M'),
+                'Recursos': self.Recursos
+                 }
+        return Data
+
+
+class Mantenimiento_Vehiculos(Events): ### tipo evento de Mantenimiento de vehiculos.
+    def __init__ (self, fecha, *Recursos):
+        super().__init__( fecha)
+        self.name = 'Mantenimiento de Vehiculos'
+        self.Restriction_hour = [ time(8), time(23) ] ###Restricciones de horario para iniciar el viaje.
+        self.Duration = timedelta(hours= 5)  ### duracion del viaje############################################################
+        self.Finish_date = self.Duration + self.fecha ###fecha de finalizacion
+        self.Restriction_recursos = {} ### No pueden usarse para este evento.
+        self.Restriction_recursos_pares = [('Marlon', 'Diego')] ###No pueden estar en el mismo Evento
+        self.message = ['No hacen falta tantos admins pendientes, seria perdida de tiempo.'] ### Mensaje de las restricciones
+        self.Needs = ['Vehiculo', 'Mecanico']  ###lo necesario de los nombres de los recursos para iniciar el viaje.
+        self.Recursos = list(Recursos)
+    def __dict__ (self):
+        Data = {'Nombre': self.name,
+                'Fecha inicio': datetime.strftime(self.fecha, '%d/%m/%Y --- %H:%M'),
+                'Fecha fin': datetime.strftime(self.Finish_date, '%d/%m/%Y --- %H:%M'),
+                'Recursos': self.Recursos
+                 }
+        return Data
+    
+
+class Vacaciones_trabajadores(Events): ### tipo evento de Mantenimiento de vehiculos.
+    def __init__ (self, fecha, *Recursos):
+        super().__init__( fecha)
+        self.name = 'Descanso pagado a los trabajadores'
+        self.Restriction_hour = [ time(5), time(23) ] ###Restricciones de horario para iniciar el viaje.
+        self.Duration = timedelta(hours= 5)  ### duracion del viaje ##############################
+        self.Finish_date = self.Duration + self.fecha ###fecha de finalizacion
+        self.Restriction_recursos = {'Transtur1': 'No se necesitan vehiculos para esta actividad',
+                                     'Transtur2': 'No se necesitan vehiculos para esta actividad',
+                                     'Camion1': 'No se necesitan vehiculos para esta actividad',
+                                     'Camion2': 'No se necesitan vehiculos para esta actividad' } ### No pueden usarse para este evento.
+        self.Restriction_recursos_pares = [] ###No pueden estar en el mismo Evento
+        self.message = [] ### Mensaje de las restricciones
+        self.Needs = []  ###lo necesario de los nombres de los recursos para iniciar el viaje.
         self.Recursos = list(Recursos)
     
     def __dict__ (self):

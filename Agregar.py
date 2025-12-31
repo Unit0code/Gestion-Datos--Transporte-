@@ -7,10 +7,11 @@ import Jsons
 from user import User
 from sys import exit
 import time
-from miscelaneo import clear, try_option
+from miscelaneo import clean, try_option
+import copy
 
 def printeo_opciones_eventos(): ###Printea los posibles eventos
-    clear()
+    clean()
     print('1. Viaje a la Habana.')
     print('2. Viaje a Guantanamo.')
     print('3. Viaje a Santiago de Cuba.')
@@ -20,11 +21,12 @@ def printeo_opciones_eventos(): ###Printea los posibles eventos
     print('7. Viaje a Pinar del Rio.')
     print('8. Viaje a Matanzas.')
     print('9. Viaje a Cienfuegos.')
-    print('10. Mantenimiento de Vehiculos.')
-    print('11. Boteo en la Habana.')
+    print('10. Boteo en la Habana.')
+    print('11. Mantenimiento de Vehiculos.')
+    print('12. Descanso pagado a los trabajadores.')
 
 def agrego_eventos(option, recursos_disponibles, user: User): ###Agregar eventos
-    clear()
+    clean()
     print('Dime la fecha en la que deseas realizarlo.')
     
     if option == 1: #Viaje a la Habana
@@ -81,16 +83,22 @@ def agrego_eventos(option, recursos_disponibles, user: User): ###Agregar eventos
         evento_final = Events.travel_Cienfuegos(fecha, *lista_recursos) ### se crea el evento
         return proceso_agregar2(evento_final, user)
 
-    elif option == 10: #mantenimiento de vehiculos
+    elif option == 10: #boteo en la habana
+        even_temporal = Events.Botear_Habana('10/10/2005 --- 12:40', 1) ###inicializo una instancia cualquiera temporal
+        fecha, lista_recursos = proceso_agregar(even_temporal, user, recursos_disponibles)
+        evento_final = Events.Botear_Habana(fecha, *lista_recursos) ### se crea el evento
+        return proceso_agregar2(evento_final, user)
+    
+    elif option == 11: #mantenimiento de vehiculos
         even_temporal = Events.Mantenimiento_Vehiculos('10/10/2005 --- 12:40', 1) ###inicializo una instancia cualquiera temporal
         fecha, lista_recursos = proceso_agregar(even_temporal, user, recursos_disponibles)
         evento_final = Events.Mantenimiento_Vehiculos(fecha, *lista_recursos) ### se crea el evento
         return proceso_agregar2(evento_final, user)
-
-    elif option == 11: #boteo en la habana
-        even_temporal = Events.Botear_Habana('10/10/2005 --- 12:40', 1) ###inicializo una instancia cualquiera temporal
+    
+    elif option == 12: #descanso para trabajadores
+        even_temporal = Events.Vacaciones_trabajadores('10/10/2005 --- 12:40', 1) ###inicializo una instancia cualquiera temporal
         fecha, lista_recursos = proceso_agregar(even_temporal, user, recursos_disponibles)
-        evento_final = Events.Botear_Habana(fecha, *lista_recursos) ### se crea el evento
+        evento_final = Events.Vacaciones_trabajadores(fecha, *lista_recursos) ### se crea el evento
         return proceso_agregar2(evento_final, user)
 
 def proceso_agregar (even_temporal, user: User, recursos_disponibles): ### Aqui se reune todas las funciones para crear y verificar el evento
@@ -101,16 +109,19 @@ def proceso_agregar (even_temporal, user: User, recursos_disponibles): ### Aqui 
     
     print('Ahora dime los recursos que emplearas.')
     print(f'Este evento en especifico necesita de {dividir_lista_str(even_temporal.Needs)}.')
-    
-    if even_temporal.Restriction_recursos_pares: ### si existen elementos en las restricciones de exclusion mutua
+
+    if even_temporal.Restriction_recursos: ### printera todas las excepciones que no se pueden usar en el evento
+        for restr1 in even_temporal.Restriction_recursos:
+            print(f'No puede ir a dicho viaje {restr1}.')
+    if even_temporal.Restriction_recursos_pares: 
         for (restr1, restr2) in even_temporal.Restriction_recursos_pares:
             print(f'En este viaje no pueden estar juntos {restr1} y {restr2}')
     print(" ")
-    print('Toma los que necesites.')
+    print('Toma los que necesites. Estos son los disponibles en dicho horario.')
     print('Escribe 0 para avisar que ya terminaste.')
 
-    recursos_disponibles_ahora = recursos_disponibles_horario_especifico(recursos_disponibles, user, fecha, fecha_fin) ### aqui veo los recursos disponibles en ese intervalo
-    lista_recursos = aux_agregar_eventos(lista_recursos, recursos_disponibles_ahora) ### para que el usuario elija los recursos
+    recursos_disponibles_a = recursos_disponibles_ah(recursos_disponibles, user, fecha, fecha_fin, even_temporal.name) ### aqui veo los recursos disponibles en ese intervalo
+    lista_recursos = aux_agregar_eventos(lista_recursos, recursos_disponibles_a) ### para que el usuario elija los recursos
     return fecha, lista_recursos
 
 def proceso_agregar2 (evento_final, user):
@@ -163,7 +174,7 @@ def verificador_fecha(duration_event):  ### recibe la duracion del evento para q
             print('Ha habido un error. Introduce una fecha en el formato solicitado')
 
 def verificador_restricciones(evento): ### chequea especificamente las restricciones solitarias
-    clear()
+    clean()
     for recursos in evento.Recursos:
         for restr, mssg in evento.Restriction_recursos.items(): ###ve las restricciones que hay y si coinciden con los nombre
             if recursos.nombre == restr:                        ### de los recursos
@@ -210,7 +221,9 @@ def verificador_validez_nuevo_evento(evento): ###llama a todas las funciones que
     restricciones_tuplas = verificador_restricciones_tuplas(evento)  ### todos devuelven False si el evento incumple algo
     recursos_necesarios = verificador_necesarias(evento)
     horario_adecuado = verificador_horarios_adecuados(evento)
-    if not recursos_necesarios or not horario_adecuado or not restricciones_solitarias or not restricciones_tuplas:
+    estado = recursos_saludables(evento)
+    
+    if not recursos_necesarios or not horario_adecuado or not restricciones_solitarias or not restricciones_tuplas or not estado:
         return False
     else:
         return True
@@ -223,17 +236,72 @@ def dividir_lista_str(lista): ###la implemente yo porque no tengo megas y se que
             return string
         string += ', '
 
-def recursos_disponibles_horario_especifico(recursos_disponibles,user:User,fecha: str, fecha_fin): ### verificara 
-    fecha = datetime.strptime(fecha,'%d/%m/%Y --- %H:%M')                                       ###que recursos estan disponibles en un horario dado
+def recursos_disponibles_ah(recursos_disponibles,user:User,fecha: str, fecha_fin, nombre_evento): ### verificara 
+    fecha = datetime.strptime(fecha,'%d/%m/%Y --- %H:%M')                                      ###que recursos estan disponibles en un horario dado
     recursos_disponibles_ahora = []  ###agregare los recursos disponibles en ese horario
     recursos_en_uso = []
+    
     for evento in user.events:                                                                  
         if evento.fecha <= fecha_fin and evento.Finish_date  >= fecha: ### condicion para que dos intervalos de tiempo colisionen
             for recurso in evento.Recursos:  ### indexo en los recursos del evento si colisionan
                 recursos_en_uso.append(recurso.nombre) ### le agrego el nombre de cada recursos en uso
+    
+    recursos_excedidos = revision_recursos_excedidos(nombre_evento, user, recursos_disponibles) 
+    recursos_en_uso += recursos_excedidos
+
     for recurso_disp in recursos_disponibles:
         if recurso_disp.nombre in recursos_en_uso: ### si el nombre de dicho recurso esta en uso, no lo agregues
             continue
         else:  
             recursos_disponibles_ahora.append(recurso_disp) ### agrega los que no estan en uso
+
     return recursos_disponibles_ahora
+
+def recursos_saludables (evento):  ### verificar que todos los recursos estan en buen estado
+    if evento.name != 'Descanso pagado a los trabajadores' and evento.name != 'Mantenimiento de Vehiculos':
+        for recurso in evento.Recursos:
+            if recurso.usos == 0:
+                print(f'El Recurso {recurso.nombre} se encuentra roto, necesitas llevarlo a "Mantenimiento de Vehiculos".')
+                return False
+            elif recurso.energia == 0:
+                print(f'El compannero {recurso.nombre} no tiene energia, debes darle un merecido descanso.')
+                return False
+    return True
+
+def revision_recursos_excedidos (nombre_evento: str, user: User, recursos_disponibles:list):
+    recursos_excedidos = []
+    recursoscopia = []
+
+    for recurs in recursos_disponibles:
+        recursoscopia.append(copy.copy(recurs))                                                   
+    
+    if nombre_evento != 'Mantenimiento de Vehiculos' and nombre_evento!='Descanso pagado a los trabajadores':
+        for evento in user.events:
+            if evento.name != 'Mantenimiento de Vehiculos' and evento.name !='Descanso pagado a los trabajadores':
+                for recurso in evento.Recursos:
+                    if recurso.categoria == 'Vehiculo':
+                        idx = comparador_nombres(recursoscopia, recurso)
+                        recursoscopia[idx].usos -=1
+                    else:
+                        idx = comparador_nombres(recursoscopia, recurso)
+                        recursoscopia[idx].energia -= 20
+            elif evento.name == 'Mantenimiento de Vehiculos':
+                for recurso in evento.Recursos:
+                    if recurso.categoria != 'Vehiculo':
+                        idx = comparador_nombres(recursoscopia, recurso)
+                        recursoscopia[idx].energia -= 20
+    
+        for recurso in recursoscopia:
+            if recurso.categoria == 'Vehiculo':
+                if recurso.usos <= 0:
+                    recursos_excedidos.append(recurso.nombre)
+            elif recurso.energia <= 0:
+                recursos_excedidos.append(recurso.nombre)
+    return recursos_excedidos
+    ### esta funcion en especifico se encarga de revisar si los recursos ya se le agendaron a eventos de
+    ### forma tal que cuando los terminen, ya no tengan energia/uso, entonces no se mostraran para crear un nuevo evento 
+
+def comparador_nombres (lista1, elemento):
+    for idx, x in enumerate(lista1):
+        if x.nombre == elemento.nombre:
+            return idx
